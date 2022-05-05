@@ -10,7 +10,8 @@ repository = "https://github.com/Neopallium/jpeg2k"
 homepage = "https://github.com/Neopallium/jpeg2k"
 
 [features]
-default = ["image", "threads"]
+default = ["image", "threads", "strict-mode"]
+strict-mode = []
 
 threads = ["openjpeg-sys/threads"]
 
@@ -22,8 +23,8 @@ anyhow = "1.0"
 
 image = { version = "0.23", optional = true }
 
-#openjpeg-sys = { version = "1.0", default-features = false }
-openjpeg-sys = { git ="https://github.com/Neopallium/openjpeg-sys", default-features = false }
+openjpeg-sys = { version = "1.0", default-features = false, path = "../openjpeg-sys" }
+#openjpeg-sys = { git ="https://github.com/Neopallium/openjpeg-sys", default-features = false }
 
 [dev-dependencies]
 dotenv = "0.15"

@@ -56,6 +56,8 @@ impl DecodeArea {
 pub struct DecodeParameters {
   params: sys::opj_dparameters,
   area: Option<DecodeArea>,
+
+  #[cfg(any(feature="strict-mode", doc))]
   strict: bool,
 }
 
@@ -69,6 +71,8 @@ impl Default for DecodeParameters {
     Self {
       params,
       area: Default::default(),
+
+      #[cfg(any(feature="strict-mode", doc))]
       strict: false,
     }
   }
@@ -92,6 +96,9 @@ impl DecodeParameters {
   ///
   /// If disabled then progressive downloading is supported (truncated codestreams).  This is the default.
   /// If enabled then partial/truncated codestreams will return an error.
+  /// 
+  /// Requires the `strict-mode` feature.
+  #[cfg(any(feature="strict-mode", doc))]
   pub fn strict(mut self, strict: bool) -> Self {
     self.strict = strict;
     self
@@ -444,7 +451,10 @@ impl<'a> Decoder<'a> {
   pub(crate) fn setup(&self, params: &mut DecodeParameters) -> Result<()> {
     let res = unsafe {
       sys::opj_setup_decoder(self.as_ptr(), params.as_ptr()) == 1
-      && sys::opj_decoder_set_strict_mode(self.as_ptr(), params.strict as i32) == 1
+    };
+    #[cfg(feature="strict-mode")]
+    let res = res && unsafe {
+      sys::opj_decoder_set_strict_mode(self.as_ptr(), params.strict as i32) == 1
     };
     if res {
       Ok(())
